@@ -89,7 +89,7 @@ def fill_sheet_tendered():
 
 
 @app.route('/fill-sheet-maservices', methods=['GET'])
-def fill_sheet_tendered():
+def fill_sheet_maservices():
     site_name = "MAServices"
     cur.execute(f"SELECT * FROM site WHERE name = '{site_name}'")
     site = cur.fetchone()

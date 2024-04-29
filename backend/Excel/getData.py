@@ -1,8 +1,6 @@
 import requests
 
-def getDataTendered(credentials, scopes, site_id, drive_id, workbook_id, worksheet_id):
-    site_name = "Tendered"
-
+def getData(credentials, scopes, site_id, drive_id, workbook_id, worksheet_id):
     access_token = credentials.get_token(*scopes)
     endpoint = f'https://graph.microsoft.com/v1.0/sites/{site_id}/drives/{drive_id}/items/{workbook_id}/workbook/worksheets/{worksheet_id}/usedRange'
     headers = {

@@ -87,7 +87,7 @@ def get_folder_ids(credential, scopes, site_id, drive_id):
             if item['name'] == "Data":
                 print(f"Data Folder ID: {item['id']}")
                 FOLDER_ID_DATA = item['id']
-            if item['name'] == 'Response Automator.xlsx':
+            if item['name'].endswith(".xlsx"):
                 print(f"Workbook ID: {item['id']}")
                 workbook_id = item['id']
         
@@ -121,7 +121,11 @@ def download_data(credential, scopes, site_id, drive_id, FOLDER_ID, site_name):
     if response.status_code == 200:
         data = response.json()
         for item in data['value']:
-            download_url = item['@microsoft.graph.downloadUrl']
+            try:
+                download_url = item['@microsoft.graph.downloadUrl']
+            except Exception:
+                print(f"Failed to download file: {item['name']}")
+                continue
             file_name = None
             url = item['webUrl']
             if 'file=' in url:
@@ -137,6 +141,8 @@ def download_data(credential, scopes, site_id, drive_id, FOLDER_ID, site_name):
 
             name_to_link[file_name] = url
 
+            if not os.path.exists("Data"):
+                os.makedirs("Data")
             
             if not os.path.exists(f"Data/{site_name}"):
                 os.makedirs(f"Data/{site_name}")
@@ -244,9 +250,9 @@ def main(credentials, scopes, site_name):
     files = os.listdir(f"Data/{site_name}")
     for file in files:
         if file.endswith(".pdf") or file.endswith(".docx"):
-            documents.append({"Name": file, "Link": name_to_link[file], "Path": f"Data/Tendered/{file}"})
+            documents.append({"Name": file, "Link": name_to_link[file], "Path": f"Data/{site_name}/{file}"})
 
     response = create_db_from_documents(documents, namespace= site_name)
     print(response)
 
-main(credentials, scopes, site_name= "Tendered")
+main(credentials, scopes, site_name= "MAServices")

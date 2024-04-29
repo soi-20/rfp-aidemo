@@ -124,8 +124,8 @@ def fill_sheet_maservices():
             final_data.append([answer, confidence_score, source, link, page_content])        
 
     if final_data:
-        start_col ="A"
-        end_col = "F"
+        start_col ="C"
+        end_col = "G"
         populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_count, row_num_end= row_count+len(final_data)-1, values = final_data, start_col = start_col, end_col = end_col)
         return jsonify({"message": "Questions answered"})
 

@@ -1,3 +1,12 @@
-Flask 
-Flask-SQLAlchemy
+requests
 psycopg2
+python-dotenv
+langchain
+langchain-community
+langchain-pinecone
+langchain-openai
+langchain-core
+Flask
+Flask-SQLAlchemy
+azure-identity
+openai

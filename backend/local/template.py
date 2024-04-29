@@ -23,6 +23,9 @@ scopes = ["https://graph.microsoft.com/.default"]
 
 name_to_link = {}
 
+# url structure -> https://fifthstreet791.sharepoint.com/sites/SAPSuccessFactorsAgent
+# site_name = "SAPSuccessFactorsAgent"
+
 def get_sharepoint_site_details(credential, scopes, site_name):
     access_token = credential.get_token(*scopes)
     endpoint = f'https://graph.microsoft.com/v1.0/sites/fifthstreet791.sharepoint.com:/sites/{site_name}'
@@ -156,6 +159,8 @@ def download_data(credential, scopes, site_id, drive_id, FOLDER_ID, site_name):
 
 
 
+#only works for pdf and docx files
+
 def create_db_from_documents(documents: list, namespace):
 
     embeddings = AzureOpenAIEmbeddings(
@@ -218,6 +223,7 @@ def main(credentials, scopes, site_name):
     cur = conn.cursor()
     
     # check if site already exists
+    # not optimised for new data currently 
     cur.execute(f"SELECT * FROM links WHERE comp_name = '{site_name}'")
     if cur.fetchone():
         print("Site already exists")

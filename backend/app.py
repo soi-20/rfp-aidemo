@@ -5,7 +5,7 @@ from azure.identity import ClientSecretCredential
 from Excel.getData import getData
 from Excel.populateData import populateData
 from Model.main import create_chain, get_response_from_query, filterResponse
-from Model.prompts import TENDERED_PROMPT, MAServicesPrompt
+from Model.prompts import TENDERED_PROMPT, MAServicesPrompt, JLLServicesPrompt
 from dotenv import load_dotenv
 import psycopg2
 load_dotenv()
@@ -95,6 +95,50 @@ def fill_sheet_maservices():
     site = cur.fetchone()
 
     chain = create_chain(namespace= site_name, Prompt = MAServicesPrompt )
+    row_count, data = getData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5])
+
+    if not data:
+        return jsonify({"message": "No Data available."})
+    
+
+    final_data = []
+    for row in data:
+        if row[2] == "":
+            chat_history = []
+            question = row[1]
+            response = get_response_from_query(question, chain, chat_history)
+            answer = response['Answer']
+            print("Answer: ", answer + "\n")
+            link = response['link']
+            source = response['source']
+            confidence_score = response['Confidence']
+            page_content = response['page_content'  ]
+            print("Confidence: ", confidence_score + "\n")
+
+            invalid_response = filterResponse(answer)
+            if invalid_response == "YES":
+                confidence_score = "N.A."
+                source = "N.A."
+                link = "N.A."
+                page_content = "N.A."
+            final_data.append([answer, confidence_score, source, link, page_content])        
+
+    if final_data:
+        start_col ="C"
+        end_col = "G"
+        populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_count, row_num_end= row_count+len(final_data)-1, values = final_data, start_col = start_col, end_col = end_col)
+        return jsonify({"message": "Questions answered"})
+
+    else:
+        return jsonify({"message": "No New Questions to answer."})
+    
+@app.route('/fill-sheet-jllservices', methods=['GET'])
+def fill_sheet_jllservices():
+    site_name = "JLLServices"
+    cur.execute(f"SELECT * FROM site WHERE name = '{site_name}'")
+    site = cur.fetchone()
+
+    chain = create_chain(namespace= site_name, Prompt = JLLServicesPrompt )
     row_count, data = getData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5])
 
     if not data:

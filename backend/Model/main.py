@@ -96,7 +96,10 @@ def get_response_from_query(question, rag_chain, chat_history):
         pdf_name = doc.metadata['name']
         page_number = doc.metadata['page_number']
         link = doc.metadata['doc_link']
-        source = pdf_name + ", p. " + str(int(page_number) + 1)
+        try:
+            source = pdf_name + ", p. " + str(int(page_number) + 1)
+        except Exception:
+            source = pdf_name
         break
 
     return {

@@ -12,10 +12,6 @@ from dotenv import load_dotenv
 import psycopg2
 load_dotenv()
 
-scope = ["https://www.googleapis.com/auth/spreadsheets"]
-credentials_sheet = Credentials.from_service_account_file("credentials.json", scopes=scope)
-client = gspread.authorize(credentials_sheet)
-
 credentials = ClientSecretCredential(
     client_id="86dfb3ef-b0fc-4bbe-90b6-f1a11c619f8e",
     client_secret="34d8Q~B72MZ5PUCQKI5ZCR2L3cM6PB4eJ1teFbw.",
@@ -185,6 +181,9 @@ def fill_sheet_jllservices():
 
 @app.route('/fill-sheet-discovery-consulting', methods=['GET'])
 def fill_sheet_discovery_consulting():
+    scope = ["https://www.googleapis.com/auth/spreadsheets"]
+    credentials_sheet = Credentials.from_service_account_file("credentials.json", scopes=scope)
+    client = gspread.authorize(credentials_sheet)
     site_name = "DiscoveryConsulting"
     SHEET_ID_DISCOVERY_CONSULTING = "1Da6VxazZnjuZ86BdnYstwGAOLD_BmfiryfKvM4jNwHo"
 

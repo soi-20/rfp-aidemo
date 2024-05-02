@@ -1,5 +1,4 @@
 requests
-# psycopg2
 psycopg2-binary
 python-dotenv
 langchain
@@ -11,3 +10,6 @@ Flask
 Flask-SQLAlchemy
 azure-identity
 openai
+gspread
+google-auth
+google-api-python-client

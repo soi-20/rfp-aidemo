@@ -62,6 +62,7 @@ def fill_sheet_tendered():
             question = row[1]
             response = get_response_from_query(question, chain, chat_history)
             answer = response['Answer']
+            answer = answer.replace('""', "")
             print("Answer: ", answer + "\n")
             link = response['link']
             source = response['source']
@@ -109,6 +110,7 @@ def fill_sheet_maservices():
             question = row[1]
             response = get_response_from_query(question, chain, chat_history)
             answer = response['Answer']
+            answer = answer.replace('""', "")
             print("Answer: ", answer + "\n")
             link = response['link']
             source = response['source']
@@ -153,6 +155,7 @@ def fill_sheet_jllservices():
             question = row[1]
             response = get_response_from_query(question, chain, chat_history)
             answer = response['Answer']
+            answer = answer.replace('""', "")
             print("Answer: ", answer + "\n")
             link = response['link']
             source = response['source']

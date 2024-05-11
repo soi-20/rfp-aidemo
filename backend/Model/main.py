@@ -110,6 +110,35 @@ def get_response_from_query(question, rag_chain, chat_history):
         "page_content": page_content
     }
 
+
+def get_response_from_query_heightPM(question, rag_chain, chat_history):
+    response = rag_chain.invoke({"input": question, "chat_history": chat_history})
+    chat_history.extend([HumanMessage(content=question), HumanMessage(content=response['answer'])])
+
+    answer = response['answer']
+    context_documents = response['context']
+
+    link = ""
+    source = ""
+    page_content = ""
+    for doc in context_documents:
+        page_content = doc.page_content
+        pdf_name = doc.metadata['name']
+        page_number = doc.metadata['page_number']
+        link = doc.metadata['doc_link']
+        try:
+            source = pdf_name + ", p. " + str(int(page_number) + 1)
+        except Exception:
+            source = pdf_name
+        break
+
+    return {
+        "Answer": f"{answer}",
+        "link": link,
+        "source": source,
+        "page_content": page_content
+    }
+
 def filterResponse(response):
     client = openai.AzureOpenAI(
         azure_endpoint = os.environ["AZURE_ENDPOINT_GPT_4"], 

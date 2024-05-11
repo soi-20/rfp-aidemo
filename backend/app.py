@@ -4,10 +4,10 @@ from models import db
 from azure.identity import ClientSecretCredential
 import gspread
 from google.oauth2.service_account import Credentials
-from Excel.getData import getData
+from Excel.getData import getData, getDataHeightPM
 from Excel.populateData import populateData
-from Model.main import create_chain, get_response_from_query, filterResponse
-from Model.prompts import TENDERED_PROMPT, MAServicesPrompt, JLLServicesPrompt, DiscoveryConsultingPrompt, ServiceFMPrompt
+from Model.main import create_chain, get_response_from_query, filterResponse, get_response_from_query_heightPM
+from Model.prompts import TENDERED_PROMPT, MAServicesPrompt, JLLServicesPrompt, DiscoveryConsultingPrompt, ServiceFMPrompt, HeightPMPrompt
 from dotenv import load_dotenv
 import psycopg2
 load_dotenv()
@@ -190,7 +190,7 @@ def fill_sheet_serviceFM():
     site_name = "ServiceFM"
     cur.execute(f"SELECT * FROM site WHERE name = '{site_name}'")
     site = cur.fetchone()
-
+    print(site)
     chain = create_chain(namespace= site_name, Prompt = ServiceFMPrompt )
     row_count, data = getData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5])
 
@@ -224,6 +224,43 @@ def fill_sheet_serviceFM():
     if final_data:
         start_col ="C"
         end_col = "G"
+        populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_count, row_num_end= row_count+len(final_data)-1, values = final_data, start_col = start_col, end_col = end_col)
+        return jsonify({"message": "Questions answered"})
+
+    else:
+        return jsonify({"message": "No New Questions to answer."})
+    
+@app.route('/fill-sheet-heightpm', methods=['GET'])
+def fill_sheet_heightPM():
+    site_name = "HeightPM"
+    cur.execute(f"SELECT * FROM site WHERE name = '{site_name}'")
+    site = cur.fetchone()
+
+    chain = create_chain(namespace= site_name, Prompt = HeightPMPrompt )
+    row_count, data = getDataHeightPM(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5])
+
+    if not data:
+        return jsonify({"message": "No Data available."})
+    
+
+    final_data = []
+    for i, row in enumerate(data):
+        if row[1] == "":
+            if i == 0:
+                continue
+            chat_history = []
+            question = row[0]
+            response = get_response_from_query_heightPM(question, chain, chat_history)
+            answer = response['Answer']
+            print("Answer: ", answer + "\n")
+            # link = response['link']
+            # source = response['source']
+            # page_content = response['page_content']
+            final_data.append([answer])        
+
+    if final_data:
+        start_col ="B"
+        end_col = "B"
         populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_count, row_num_end= row_count+len(final_data)-1, values = final_data, start_col = start_col, end_col = end_col)
         return jsonify({"message": "Questions answered"})
 

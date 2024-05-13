@@ -297,11 +297,22 @@ def fill_sheet_heightPM():
             question = row[0]
             response = get_response_from_query_heightPM(question, chain, chat_history)
             answer = response['Answer']
-            print("Answer: ", answer + "\n")
+            final_answer = ""
+            try:
+                answer = answer.split("\n")
+                for ans in answer:
+                    final_answer += ans + "\n\n"
+                # Remove the last 2 new lines
+                final_answer = final_answer[:-2]
+            
+            except Exception as e:
+                final_answer = answer
+        
+            print("Answer: ", final_answer + "\n")
             # link = response['link']
             # source = response['source']
             # page_content = response['page_content']
-            final_data.append([answer])        
+            final_data.append([final_answer])        
 
     if final_data:
         start_col ="B"

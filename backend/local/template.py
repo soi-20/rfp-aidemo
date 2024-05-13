@@ -255,4 +255,4 @@ def main(credentials, scopes, site_name):
     response = create_db_from_documents(documents, namespace= site_name)
     print(response)
 
-main(credentials, scopes, site_name= "DownerGroup2")
+main(credentials, scopes, site_name= "insurgence-demosite")

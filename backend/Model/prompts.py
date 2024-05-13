@@ -271,19 +271,22 @@ HeightPMPrompt = """
 
       Summarise this document into 5 single sentence bullet points. 
 
-      Here are examples of the how you should structure and phrase the summaries:
+      Here are examples of the how you should structure and phrase the summaries (leave out a line between each bullet point):
 
       Example 1: context of the business case:
 
       1. The demand for prison beds continues to increase and will soon exceed the
       Department’s available capacity, despite recent capacity additions.
+
       2. Targeted legislative and policy changes have successfully slowed the rate of growth in
       demand, however not sufficiently to remove the pressure on capacity.
+
       3. The Department is faced with existing capacity that is no longer fit for purpose and
       requires replacement.
+      
       4. Under increasing pressure, the Department has continued to manage the muster across
-      all classifications of prisoner, through just in time, resource-intensive operational logistics
-      and adjustments across the prison network.
+      all classifications of prisoner, through just in time, resource-intensive operational logistics and adjustments across the prison network.
+
       5. In order to shape this response, the Business Case has developed a set of Capacity
       Principles. These provide a measure against which all feasible capacity responses can
       be evaluated to ensure alignment with the Department’s requirements.
@@ -292,15 +295,18 @@ HeightPMPrompt = """
 
       1. The implementation plan for traditional build components is based on the considerable
       experience that the Department has developed in this area.
-      2. Collaboration with Central Agencies to deliver the PPP activities identified within the
-      implementation approach will be crucial to achieving timeframes and a successful
+
+      2. Collaboration with Central Agencies to deliver the PPP activities identified within the implementation approach will be crucial to achieving timeframes and a successful
       outcome
+
       3. Separate governance for traditional build components and for the PPP build component is
       in place. These governance structures will ensure that subject matter expertise and advice
       is best applied.
+
       4. Certain programme activities, such as PMO support and quality assurance processes, will
       be common or shared between the traditional build components and the PPP build
       component.
+
       5. To maintain flexibility, the implementation approach includes several check points and
       potential off-ramps that will enable the Department to change the timing or detail of the
       investment required over the course of the programme.
@@ -309,14 +315,18 @@ HeightPMPrompt = """
 
       1. The total 10 year programme capital requirement is $820 million. The operating requirement
       to support this is $858 million.
+
       2. The operating cost is a net figure and includes reallocation of funding for prisoner related
       costs of $244 million over the 10 year period as a result of decommissioning end of life
       stock and associated replacement.
+
       3. For Budget 2010, the total capital investment is $408 million to deliver the proposed Mt Eden
       Phase 2 and Wiri components. The Department will self fund the full capital cost of $83
       million for Mt Eden Phase 2.
+
       4. For Budget 2011, capital costs of $272 million are required to deliver the proposed Waikeria
       developments.
+
       5. While alternative procurement options have been assessed, capital and operating costs are
       based on a traditional design and build procurement option.
 

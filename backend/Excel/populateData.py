@@ -1,6 +1,8 @@
 import requests
 
 def populateData(credentials, scopes, site_id, drive_id, workbook_id, worksheet_id, row_num_start, row_num_end, values, start_col, end_col):
+    print(f"Populating data from {start_col}{row_num_start} to {end_col}{row_num_end}.")
+    print(f"Values: {values}")
     access_token = credentials.get_token(*scopes)
     endpoint = f'https://graph.microsoft.com/v1.0/sites/{site_id}/drives/{drive_id}/items/{workbook_id}/workbook/worksheets/{worksheet_id}/range(address=\'{start_col}{row_num_start}:{end_col}{row_num_end}\')'
     headers = {

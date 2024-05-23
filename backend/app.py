@@ -277,7 +277,6 @@ def fill_sheet_serviceFM_v2():
 
             populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_number, row_num_end= row_number+len(final_data)-1, values = final_data, start_col = "I", end_col = "O")
             print("Data populated")
-            break
     return jsonify({"message": "Questions answered"})
 
 
@@ -476,4 +475,4 @@ def fill_sheet_discovery_consulting():
         return jsonify({"message": "No New Questions to answer."})
 
 if __name__ == '__main__':
-    app.run(host="localhost", port=8000)
+    app.run(host="0.0.0.0", port=8000)

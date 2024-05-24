@@ -7,7 +7,7 @@ from google.oauth2.service_account import Credentials
 from Excel.getData import getData, getDataHeightPM, getDataServiceFMv2
 from Excel.populateData import populateData
 from Model.main import create_chain, get_response_from_query, filterResponse, get_response_from_query_heightPM
-from Model.prompts import TENDERED_PROMPT, MAServicesPrompt, JLLServicesPrompt, DiscoveryConsultingPrompt, ServiceFMPrompt, HeightPMPrompt, DownerGroupPrompt, InsurgencePrompt, ServiceFMPromptV2
+from Model.prompts import TENDERED_PROMPT, MAServicesPrompt, JLLServicesPrompt, DiscoveryConsultingPrompt, ServiceFMPrompt, HeightPMPrompt, DownerGroupPrompt, InsurgencePrompt, ServiceFMPromptV2, ServiceFMPromptV2_YesNo
 from dotenv import load_dotenv
 import psycopg2
 load_dotenv()
@@ -237,7 +237,6 @@ def fill_sheet_serviceFM_v2():
     cur.execute(f"SELECT * FROM site WHERE name = '{site_name}'")
     site = cur.fetchone()
     print(site)
-    chain = create_chain(namespace= site_name, Prompt = ServiceFMPromptV2 )
     data = getDataServiceFMv2(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5])
 
     if not data:
@@ -251,32 +250,38 @@ def fill_sheet_serviceFM_v2():
             question = data[4]
             question_description = data[5]
             response_type = data[6]
-            if "Yes/No Value" in response_type:
-                continue
-            final_question = f"{question}: {question_description}"
-            keywords = {"Financial", "revenue", "costing", "cost", "financial", "Cost", "Costing", "Revenue"}
-            if any(keyword in final_question for keyword in keywords):
-                continue
-            response = get_response_from_query(final_question, chain, chat_history)
-            answer = response['Answer']
-            answer = answer.replace('""', "")
-            print("Answer: ", answer + "\n")
-            link = response['link']
-            source = response['source']
-            confidence_score = response['Confidence']
-            page_content = response['page_content'  ]
-            print("Confidence: ", confidence_score + "\n")
+            if any(keyword in response_type for keyword in {"Text", "Yes/No", "Option List"}):
+                final_question = f"{question}: {question_description}"
+                keywords = {"Financial", "revenue", "costing", "cost", "financial", "Cost", "Costing", "Revenue"}
+                if any(keyword in final_question for keyword in keywords):
+                    continue
 
-            invalid_response = filterResponse(answer)
-            if invalid_response == "YES":
-                confidence_score = "N.A."
-                source = "N.A."
-                link = "N.A."
-                page_content = "N.A."
-            final_data = [[answer, "","", confidence_score, source, link, page_content]]     
+                if any(keyword in response_type for keyword in {"Yes/No", "Option List"}):
+                    chain = create_chain(namespace= site_name, Prompt = ServiceFMPromptV2_YesNo )
+                else:
+                    chain = create_chain(namespace= site_name, Prompt = ServiceFMPromptV2 )
 
-            populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_number, row_num_end= row_number+len(final_data)-1, values = final_data, start_col = "I", end_col = "O")
-            print("Data populated")
+                response = get_response_from_query(final_question, chain, chat_history)
+                answer = response['Answer']
+                answer = answer.replace('""', "")
+                print("Answer: ", answer + "\n")
+                link = response['link']
+                source = response['source']
+                confidence_score = response['Confidence']
+                page_content = response['page_content'  ]
+                print("Confidence: ", confidence_score + "\n")
+
+                if response_type == "Text":
+                    invalid_response = filterResponse(answer)
+                    if invalid_response == "YES":
+                        confidence_score = "N.A."
+                        source = "N.A."
+                        link = "N.A."
+                        page_content = "N.A."
+                final_data = [[answer, "","", confidence_score, source, link, page_content]]     
+
+                populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_number, row_num_end= row_number+len(final_data)-1, values = final_data, start_col = "I", end_col = "O")
+                print("Data populated")
     return jsonify({"message": "Questions answered"})
 
 
@@ -475,4 +480,4 @@ def fill_sheet_discovery_consulting():
         return jsonify({"message": "No New Questions to answer."})
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="localhost", port=8000)

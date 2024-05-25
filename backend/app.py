@@ -252,7 +252,7 @@ def fill_sheet_serviceFM_v2():
             response_type = data[6]
             if any(keyword in response_type for keyword in {"Text", "Yes/No", "Option List"}):
                 final_question = f"{question}: {question_description}"
-                keywords = {"Financial", "revenue", "costing", "cost", "financial", "Cost", "Costing", "Revenue"}
+                keywords = {"Financial", "revenue", "costing", "cost", "financial", "Cost", "Costing", "Revenue", "Insurance", "insurance"}
                 if any(keyword in final_question for keyword in keywords):
                     continue
 
@@ -264,9 +264,10 @@ def fill_sheet_serviceFM_v2():
                 response = get_response_from_query(final_question, chain, chat_history)
                 answer = response['Answer']
                 answer = answer.replace('""', "")
+                source = response['source']
+                answer = f"More details are provided in {source}" + "\n\n" + answer
                 print("Answer: ", answer + "\n")
                 link = response['link']
-                source = response['source']
                 confidence_score = response['Confidence']
                 page_content = response['page_content'  ]
                 print("Confidence: ", confidence_score + "\n")
@@ -480,4 +481,4 @@ def fill_sheet_discovery_consulting():
         return jsonify({"message": "No New Questions to answer."})
 
 if __name__ == '__main__':
-    app.run(host="localhost", port=8000)
+    app.run(host="0.0.0.0", port=8000)

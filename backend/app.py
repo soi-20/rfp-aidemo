@@ -265,7 +265,8 @@ def fill_sheet_serviceFM_v2():
                 answer = response['Answer']
                 answer = answer.replace('""', "")
                 source = response['source']
-                answer = f"More details are provided in {source}" + "\n\n" + answer
+                if response_type == "Text":
+                    answer = f"More details are provided in {source}" + "\n\n" + answer
                 print("Answer: ", answer + "\n")
                 link = response['link']
                 confidence_score = response['Confidence']

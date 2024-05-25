@@ -70,11 +70,11 @@ def get_response_from_query(question, rag_chain, chat_history):
     ai_answer = response['answer']
     confidence_score = ""
     try:
-        if "Fully complies" in ai_answer:
+        if "fully complies" in ai_answer.lower():
             confidence_score = "Fully complies."
-        elif "Partially complies" in ai_answer:
+        elif "partially complies" in ai_answer.lower():
             confidence_score = "Partially complies."
-        elif "Does not comply" in ai_answer:
+        elif "does not comply" in ai_answer.lower():
             confidence_score = "Does not comply."
         if confidence_score != "":
             answer = ai_answer.replace(confidence_score, "")
@@ -85,7 +85,7 @@ def get_response_from_query(question, rag_chain, chat_history):
         answer = ai_answer
         confidence_score = "N.A."
     context_documents = response['context']
-
+        
     link = ""
     source = ""
     page_content = ""

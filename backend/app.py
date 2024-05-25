@@ -266,6 +266,7 @@ def fill_sheet_serviceFM_v2():
                 answer = answer.replace('""', "")
                 source = response['source']
                 if response_type == "Text":
+                    answer = answer.replace("Confidence Score:", "").replace("Confidence score:", "")
                     answer = f"More details are provided in {source}" + "\n\n" + answer
                 print("Answer: ", answer + "\n")
                 link = response['link']
@@ -282,8 +283,8 @@ def fill_sheet_serviceFM_v2():
                         page_content = "N.A."
                 final_data = [[answer, "","", confidence_score, source, link, page_content]]     
 
-                populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_number, row_num_end= row_number+len(final_data)-1, values = final_data, start_col = "I", end_col = "O")
-                print("Data populated")
+                # populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_number, row_num_end= row_number+len(final_data)-1, values = final_data, start_col = "I", end_col = "O")
+                # print("Data populated")
     return jsonify({"message": "Questions answered"})
 
 
@@ -482,4 +483,4 @@ def fill_sheet_discovery_consulting():
         return jsonify({"message": "No New Questions to answer."})
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0", port=8000)

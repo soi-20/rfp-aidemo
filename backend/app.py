@@ -483,4 +483,4 @@ def fill_sheet_discovery_consulting():
         return jsonify({"message": "No New Questions to answer."})
 
 if __name__ == '__main__':
-    app.run(host="0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=8000)

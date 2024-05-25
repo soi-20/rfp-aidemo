@@ -79,10 +79,8 @@ def get_response_from_query(question, rag_chain, chat_history):
         if confidence_score != "":
             answer = ai_answer.replace(confidence_score, "")
         else:
-            answer = ai_answer.split('\n')[0]
-            confidence_score = ai_answer.split('\n')[1]
-            if confidence_score == "":
-                confidence_score = ai_answer.split('\n')[2]
+            answer = ai_answer
+            confidence_score = "N.A."
     except Exception:
         answer = ai_answer
         confidence_score = "N.A."

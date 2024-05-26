@@ -98,6 +98,8 @@ def get_response_from_query(question, rag_chain, chat_history):
             source = pdf_name + ", p. " + str(int(page_number) + 1)
         except Exception:
             source = pdf_name
+        if "Client criteria" in page_content:
+            continue
         break
 
     return {

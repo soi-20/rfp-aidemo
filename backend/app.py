@@ -264,6 +264,8 @@ def fill_sheet_serviceFM_v2():
                 response = get_response_from_query(final_question, chain, chat_history)
                 answer = response['Answer']
                 answer = answer.replace('""', "")
+                if len(answer) < 10:
+                    answer = answer.replace('"', '')
                 source = response['source']
                 if response_type == "Text":
                     answer = answer.replace("Confidence Score:", "").replace("Confidence score:", "")

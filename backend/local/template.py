@@ -88,6 +88,7 @@ def get_folder_ids(credential, scopes, site_id, drive_id):
                 print(f"Data Folder ID: {item['id']}")
                 FOLDER_ID_DATA = item['id']
             if item['name'].endswith(".xlsx"):
+                print(f"Found workbook: {item['name']}")
                 print(f"Workbook ID: {item['id']}")
                 workbook_id = item['id']
         
@@ -106,8 +107,9 @@ def get_workbook_details(credential, scopes, site_id, drive_id, workbook_id):
     if response.status_code == 200:
         worksheets = response.json()
         for worksheet in worksheets['value']:
+            print(f"Found workbook: {worksheet['name']}")
             print(f"Worksheet ID: {worksheet['id']}")
-            return worksheet['id']
+            # return worksheet['id']
     else:
         print(f"Failed to retrieve worksheets: {response.status_code}")
 
@@ -255,4 +257,17 @@ def main(credentials, scopes, site_name):
     response = create_db_from_documents(documents, namespace= site_name)
     print(response)
 
-main(credentials, scopes, site_name= "ServiceFm-v2")
+# main(credentials, scopes, site_name= "MPAAustralia")
+
+
+get_workbook_details(credentials, scopes, "fifthstreet791.sharepoint.com,0736897d-4086-41ad-9427-675d1c9a9a19,d21c48b5-54d3-46fd-9068-7009c2cc89a9", "b!fYk2B4ZArUGUJ2ddHJqaGbVIHNLTVP1GkGhwCcLMiakFbR0u5I3_RpGIm4ykfpBZ", "01BECQS6KHM7Q35JR6CRC3IKYQVIBUNNFW")
+
+# Site ID:  fifthstreet791.sharepoint.com,0736897d-4086-41ad-9427-675d1c9a9a19,d21c48b5-54d3-46fd-9068-7009c2cc89a9
+# Drive ID: b!fYk2B4ZArUGUJ2ddHJqaGbVIHNLTVP1GkGhwCcLMiakFbR0u5I3_RpGIm4ykfpBZ
+# Workbook ID: 01BECQS6KHM7Q35JR6CRC3IKYQVIBUNNFW
+# Found workbook: Macquarie Questionnaire.xlsx
+# Worksheet ID: {2B65DDB8-2B99-4D09-A909-76EC68E56DC5}
+# Found workbook: Third Party POC Questionnaire - revised Mar 2024 - Updated.xlsx
+# Workbook ID: 01BECQS6MUXYY22NNC45CZMPKRY3C7NEO4
+# Worksheet ID: {C604DDF2-B3BA-4F7B-8559-F83636FB0DC2}
+

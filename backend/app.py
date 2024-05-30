@@ -4,10 +4,10 @@ from models import db
 from azure.identity import ClientSecretCredential
 import gspread
 from google.oauth2.service_account import Credentials
-from Excel.getData import getData, getDataHeightPM, getDataServiceFMv2
+from Excel.getData import getData, getDataHeightPM, getDataServiceFMv2, getDataMPAAustraliaMQ, getDataMPAAustraliaTPQ
 from Excel.populateData import populateData
 from Model.main import create_chain, get_response_from_query, filterResponse, get_response_from_query_heightPM
-from Model.prompts import TENDERED_PROMPT, MAServicesPrompt, JLLServicesPrompt, DiscoveryConsultingPrompt, ServiceFMPrompt, HeightPMPrompt, DownerGroupPrompt, InsurgencePrompt, ServiceFMPromptV2, ServiceFMPromptV2_YesNo
+from Model.prompts import TENDERED_PROMPT, MAServicesPrompt, JLLServicesPrompt, DiscoveryConsultingPrompt, ServiceFMPrompt, HeightPMPrompt, DownerGroupPrompt, InsurgencePrompt, ServiceFMPromptV2, ServiceFMPromptV2_YesNo, MPAAustraliaPrompt
 from dotenv import load_dotenv
 import psycopg2
 load_dotenv()
@@ -374,6 +374,108 @@ def fill_sheet_insurgence():
         start_col ="C"
         end_col = "G"
         populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = site[4], worksheet_id = site[5],row_num_start = row_count, row_num_end= row_count+len(final_data)-1, values = final_data, start_col = start_col, end_col = end_col)
+        return jsonify({"message": "Questions answered"})
+
+    else:
+        return jsonify({"message": "No New Questions to answer."})
+    
+
+@app.route('/fill-sheet-mpa-australia-mq', methods=['GET'])
+def fill_sheet_mpa_australia_mq():
+    site_name = "MPAAustralia"
+    cur.execute(f"SELECT * FROM site WHERE name = '{site_name}'")
+    site = cur.fetchone()
+    chain = create_chain(namespace= site_name, Prompt = MPAAustraliaPrompt )
+
+    Workbook_ID_MQ =  "01BECQS6KHM7Q35JR6CRC3IKYQVIBUNNFW"
+    Worksheet_ID_MQ = "{37D982DA-1AA1-4C2C-A888-08A2AAAB4567}"
+
+    # Filling the MQ sheet
+    row_count, data = getDataMPAAustraliaMQ(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = Workbook_ID_MQ, worksheet_id = Worksheet_ID_MQ)
+
+    if not data:
+        return jsonify({"message": "No Data available."})
+    
+
+    final_data = []
+    for row in data:
+        if row[3] == "":
+            chat_history = []
+            question = row[2]
+            response = get_response_from_query(question, chain, chat_history)
+            answer = response['Answer']
+            answer = answer.replace('""', "")
+            print("Answer: ", answer + "\n")
+            link = response['link']
+            source = response['source']
+            confidence_score = response['Confidence']
+            page_content = response['page_content'  ]
+            print("Confidence: ", confidence_score + "\n")
+
+            invalid_response = filterResponse(answer)
+            if invalid_response == "YES":
+                confidence_score = "N.A."
+                source = "N.A."
+                link = "N.A."
+                page_content = "N.A."
+            final_data.append([answer, confidence_score, source, link, page_content])
+
+    if final_data:
+        start_col ="D"
+        end_col = "H"
+        populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = Workbook_ID_MQ, worksheet_id = Worksheet_ID_MQ,row_num_start = row_count, row_num_end= row_count+len(final_data)-1, values = final_data, start_col = start_col, end_col = end_col)
+        return jsonify({"message": "Questions answered"})
+
+    else:
+        return jsonify({"message": "No New Questions to answer."})
+    
+
+@app.route('/fill-sheet-mpa-australia-tpq', methods=['GET'])
+def fill_sheet_mpa_australia_tpq():
+    site_name = "MPAAustralia"
+    cur.execute(f"SELECT * FROM site WHERE name = '{site_name}'")
+    site = cur.fetchone()
+    chain = create_chain(namespace= site_name, Prompt = MPAAustraliaPrompt )
+
+    Workbook_ID_TPQ =  "01BECQS6MUXYY22NNC45CZMPKRY3C7NEO4"
+    Worksheet_ID_TPQ = "{C604DDF2-B3BA-4F7B-8559-F83636FB0DC2}"
+
+    # Filling the TPQ sheet
+    row_count, data = getDataMPAAustraliaTPQ(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = Workbook_ID_TPQ, worksheet_id = Worksheet_ID_TPQ)
+
+    if not data:
+        return jsonify({"message": "No Data available."})
+    
+
+    final_data = []
+    for i, row in enumerate(data):
+        if i == 0:
+            continue
+        if row[3] == "":
+            chat_history = []
+            question = row[2]
+            response = get_response_from_query(question, chain, chat_history)
+            answer = response['Answer']
+            answer = answer.replace('""', "")
+            print("Answer: ", answer + "\n")
+            link = response['link']
+            source = response['source']
+            confidence_score = response['Confidence']
+            page_content = response['page_content'  ]
+            print("Confidence: ", confidence_score + "\n")
+
+            invalid_response = filterResponse(answer)
+            if invalid_response == "YES":
+                confidence_score = "N.A."
+                source = "N.A."
+                link = "N.A."
+                page_content = "N.A."
+            final_data.append([answer, "", "", "", "", "", "", "", confidence_score, source, link, page_content]) 
+
+    if final_data:
+        start_col ="D"
+        end_col = "O"
+        populateData(credentials, scopes, site_id = site[2], drive_id = site[3], workbook_id = Workbook_ID_TPQ, worksheet_id = Worksheet_ID_TPQ,row_num_start = row_count, row_num_end= row_count+len(final_data)-1, values = final_data, start_col = start_col, end_col = end_col)
         return jsonify({"message": "Questions answered"})
 
     else:
